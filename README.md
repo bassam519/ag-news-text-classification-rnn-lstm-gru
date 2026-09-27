@@ -1,81 +1,364 @@
-# AG News Text Classification with RNN, LSTM, and GRU
+# 📰 AG News Text Classification with RNN, LSTM & GRU
 
-A text classification project that compares three recurrent architectures — Simple RNN, LSTM, and GRU — for classifying news articles into four categories using the AG News dataset.
+A deep learning NLP project that explores and compares **Simple RNN, LSTM, and GRU** architectures for classifying news articles into four categories using the **AG News** dataset.
 
-## Overview
+The project uses both **news titles and article body text**, applies text preprocessing and vectorization, and evaluates each recurrent architecture based on training, validation, and test performance.
 
-This project builds and evaluates deep learning models to classify news headlines and article text into one of four categories:
+---
 
-- **World**
-- **Sports**
-- **Business**
-- **Sci/Tech**
+## 🚀 Project Highlights
 
-Both the article **title** and **body text** are used as input, vectorized separately, and concatenated before being fed into the model.
+* 🧠 Compared **Simple RNN, LSTM, and GRU**
+* 📰 Classified news into **4 categories**
+* 🔤 Used both **title + article text**
+* ⚙️ Applied `TextVectorization` with separate vocabularies
+* 🔗 Concatenated title and body representations
+* 🛑 Used **Early Stopping** to reduce overfitting
+* 📊 Compared **Accuracy and Loss** across datasets
+* 💾 Saved the final LSTM model for later use
 
-## Dataset
+---
 
-- **Source:** [AG News CSV (CharCnn_Keras repo)](https://github.com/mhjabreel/CharCnn_Keras/tree/master/data/ag_news_csv)
-- **Classes:** World, Sports, Business, Sci/Tech
-- **Splits:** Train / Validation (80/20 split of the original train set) / Test
-- The dataset is balanced across classes with no missing values or duplicates.
+## 📌 News Categories
 
-## Pipeline
+The AG News dataset contains four classes:
 
-1. **Data Loading** — Downloads `train.csv`, `test.csv`, and `classes.txt` directly from the source repository.
-2. **Exploratory Data Analysis** — Checks class distribution, missing values, and duplicates.
-3. **Text Cleaning** — Lowercasing, HTML tag removal, non-alphanumeric character stripping, and whitespace normalization.
-4. **Text Vectorization** — Separate `TextVectorization` layers for title and text (vocab size 20,000, sequence length 200), concatenated into a single input tensor.
-5. **Modeling** — Three architectures built on a shared embedding layer (dim 300):
-   - **Simple RNN:** Stacked 4-layer SimpleRNN with dropout.
-   - **LSTM:** Single LSTM layer (16 units) with dropout and L2 regularization.
-   - **GRU:** Single GRU layer (32 units) with dropout and L2 regularization.
-6. **Training** — Adam optimizer, sparse categorical cross-entropy loss, early stopping on validation loss (patience 5), up to 25 epochs.
-7. **Evaluation** — Accuracy and loss compared across train/validation/test sets.
+| Category        | Description                   |
+| --------------- | ----------------------------- |
+| 🌍 **World**    | International and global news |
+| ⚽ **Sports**    | Sports-related news           |
+| 💼 **Business** | Business and financial news   |
+| 🔬 **Sci/Tech** | Science and technology news   |
 
-## Results
+---
 
-| Model | Train Acc | Val Acc | Test Acc | Train Loss | Val Loss | Test Loss |
-|---|---|---|---|---|---|---|
-| Simple RNN | 26.93% | 27.01% | 28.12% | 1.3843 | 1.3868 | 1.3826 |
-| LSTM | 83.69% | 87.80% | 89.09% | 0.4158 | 0.4581 | 0.3982 |
-| GRU | 93.72% | 88.31% | 89.41% | 0.2572 | 0.4708 | 0.3740 |
+## 📂 Dataset
 
-**Selected model: LSTM.** GRU and LSTM achieve nearly identical test accuracy, but GRU shows a larger train/validation gap (overfitting), while LSTM generalizes more consistently. LSTM was saved as the final deliverable.
+**Source:** [AG News Dataset — CharCnn_Keras](https://github.com/mhjabreel/CharCnn_Keras/tree/master/data/ag_news_csv)
 
-## Requirements
+### Dataset Details
 
-- Python 3
-- TensorFlow / Keras
-- pandas
-- scikit-learn
-- matplotlib
-- seaborn
-- joblib
-- requests
+* **Classes:** 4
+* **Inputs:** News title + article body
+* **Splits:** Train / Validation / Test
+* **Validation:** 20% of the original training set
+* **Class distribution:** Balanced
+* **Missing values:** None
+* **Duplicates:** None
 
-Install with:
+---
+
+## 🔄 Project Pipeline
+
+```text
+                 AG News Dataset
+                        │
+                        ▼
+               ┌─────────────────┐
+               │ Data Loading     │
+               └────────┬────────┘
+                        ▼
+               ┌─────────────────┐
+               │      EDA        │
+               └────────┬────────┘
+                        ▼
+               ┌─────────────────┐
+               │ Text Cleaning   │
+               └────────┬────────┘
+                        │
+              ┌─────────┴─────────┐
+              ▼                   ▼
+        News Title           Article Body
+              │                   │
+              ▼                   ▼
+     TextVectorization     TextVectorization
+              │                   │
+              └─────────┬─────────┘
+                        ▼
+                  Concatenation
+                        │
+                        ▼
+                    Embedding
+                        │
+              ┌─────────┼─────────┐
+              ▼         ▼         ▼
+            RNN       LSTM       GRU
+              │         │         │
+              └─────────┼─────────┘
+                        ▼
+                  Classification
+                        │
+                        ▼
+              Accuracy & Loss
+```
+
+---
+
+## 🧹 Data Preprocessing
+
+The text preprocessing pipeline includes:
+
+* Lowercasing
+* HTML tag removal
+* Non-alphanumeric character removal
+* Whitespace normalization
+* Duplicate checking
+* Missing-value checking
+
+---
+
+## 🔤 Text Vectorization
+
+The **title** and **article body** are vectorized separately using TensorFlow/Keras `TextVectorization`.
+
+### Configuration
+
+```text
+Vocabulary Size : 20,000
+Sequence Length : 200
+```
+
+The resulting representations are then concatenated before being passed to the neural network.
+
+---
+
+## 🧠 Model Architectures
+
+### 1. Simple RNN
+
+A stacked recurrent architecture using multiple `SimpleRNN` layers with dropout.
+
+```text
+Input
+  ↓
+Embedding
+  ↓
+SimpleRNN
+  ↓
+SimpleRNN
+  ↓
+SimpleRNN
+  ↓
+SimpleRNN
+  ↓
+Dropout
+  ↓
+Output
+```
+
+### 2. LSTM
+
+A lightweight LSTM architecture designed to capture longer-term dependencies in the text.
+
+```text
+Input
+  ↓
+Embedding
+  ↓
+LSTM (16 units)
+  ↓
+Dropout
+  ↓
+Dense / Output
+```
+
+### 3. GRU
+
+A GRU-based architecture with 32 recurrent units.
+
+```text
+Input
+  ↓
+Embedding
+  ↓
+GRU (32 units)
+  ↓
+Dropout
+  ↓
+Dense / Output
+```
+
+---
+
+## ⚙️ Training Configuration
+
+| Parameter           | Value                            |
+| ------------------- | -------------------------------- |
+| Optimizer           | Adam                             |
+| Loss                | Sparse Categorical Cross-Entropy |
+| Maximum Epochs      | 25                               |
+| Early Stopping      | Yes                              |
+| Patience            | 5                                |
+| Embedding Dimension | 300                              |
+| Vocabulary Size     | 20,000                           |
+| Sequence Length     | 200                              |
+
+---
+
+# 📊 Results
+
+The three architectures were evaluated using **training, validation, and test accuracy/loss**.
+
+| Model         | Train Acc | Val Acc | Test Acc | Train Loss | Val Loss | Test Loss |
+| ------------- | --------: | ------: | -------: | ---------: | -------: | --------: |
+| 🔹 Simple RNN |    26.93% |  27.01% |   28.12% |     1.3843 |   1.3868 |    1.3826 |
+| 🟢 LSTM       |    83.69% |  87.80% |   89.09% |     0.4158 |   0.4581 |    0.3982 |
+| 🟣 GRU        |    93.72% |  88.31% |   89.41% |     0.2572 |   0.4708 |    0.3740 |
+
+### 📈 Performance Comparison
+
+```text
+Test Accuracy
+
+Simple RNN  ██████                         28.12%
+LSTM        ██████████████████             89.09%
+GRU         ██████████████████             89.41%
+```
+
+The **LSTM and GRU models achieved very similar test accuracy**. The GRU achieved a slightly higher test accuracy, while its training accuracy was considerably higher than its validation accuracy, indicating a larger train/validation gap.
+
+For this project, **LSTM was selected as the final model** because it provided a strong validation/test performance with a smaller train/validation gap.
+
+---
+
+## 💾 Model Output
+
+After running the notebook, the selected model is saved as:
+
+```text
+best_model.pickle
+```
+
+This allows the trained model to be reused without retraining from scratch.
+
+---
+
+## 🛠️ Technologies Used
+
+| Technology                | Purpose                           |
+| ------------------------- | --------------------------------- |
+| 🐍 **Python**             | Programming language              |
+| 🧠 **TensorFlow / Keras** | Deep learning & RNN architectures |
+| 🐼 **Pandas**             | Data manipulation                 |
+| 📊 **Matplotlib**         | Visualization                     |
+| 📈 **Seaborn**            | Statistical visualization         |
+| 🔢 **Scikit-learn**       | Data splitting & evaluation       |
+| 💾 **Joblib**             | Model serialization               |
+| 🌐 **Requests**           | Dataset downloading               |
+
+---
+
+## 📦 Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/bassam519/ag-news-text-classification-rnn-lstm-gru.git
+```
+
+Navigate to the project:
+
+```bash
+cd ag-news-text-classification-rnn-lstm-gru
+```
+
+Install the dependencies:
 
 ```bash
 pip install tensorflow pandas scikit-learn matplotlib seaborn joblib requests
 ```
 
-## Usage
+---
 
-1. Open and run `AG_News_Text_Classification.ipynb` in Jupyter or Google Colab.
-2. The notebook automatically downloads the AG News dataset on first run.
-3. Run all cells sequentially to reproduce data preprocessing, model training, and evaluation.
-4. The best-performing model (LSTM) is saved as `best_model.pickle`.
+## ▶️ Usage
 
-## Project Structure
+1. Open:
 
-```
-.
-├── AG_News_Text_Classification.ipynb   # Main notebook: data prep, models, training, evaluation
-├── best_model.pickle                   # Saved LSTM model (generated after running the notebook)
-└── README.md
+```text
+AG_News_Text_Classification.ipynb
 ```
 
-## License
+2. Run the notebook using **Jupyter Notebook** or **Google Colab**.
 
-This project is provided for educational purposes. The AG News dataset is sourced from the [CharCnn_Keras repository](https://github.com/mhjabreel/CharCnn_Keras).
+3. The notebook automatically downloads the AG News dataset.
+
+4. Run the cells sequentially to reproduce:
+
+```text
+Data Loading
+     ↓
+EDA
+     ↓
+Text Cleaning
+     ↓
+Text Vectorization
+     ↓
+Model Training
+     ↓
+Evaluation
+     ↓
+Model Saving
+```
+
+5. The trained LSTM model will be saved as:
+
+```text
+best_model.pickle
+```
+
+---
+
+## 📁 Project Structure
+
+```text
+ag-news-text-classification-rnn-lstm-gru/
+│
+├── 📓 AG_News_Text_Classification.ipynb
+│
+├── 💾 best_model.pickle
+│
+└── 📄 README.md
+```
+
+> `best_model.pickle` is generated after running the notebook.
+
+---
+
+## 🎯 Learning Objectives
+
+Through this project, the following concepts were explored:
+
+* Natural Language Processing (NLP)
+* Text preprocessing
+* Text vectorization
+* Word embeddings
+* Recurrent Neural Networks
+* LSTM networks
+* GRU networks
+* Overfitting and generalization
+* Early stopping
+* Model evaluation
+* Multi-class text classification
+
+---
+
+## 📚 References
+
+* [AG News Dataset — CharCnn_Keras](https://github.com/mhjabreel/CharCnn_Keras)
+* [TensorFlow](https://www.tensorflow.org/)
+* [Keras](https://keras.io/)
+
+---
+
+## 👨‍💻 Author
+
+**Bassam Omar**
+
+Computer Science & AI Student
+Interested in **Data Science, Machine Learning, and Deep Learning**.
+
+---
+
+## ⭐ If you find this project useful
+
+Feel free to explore the notebook, experiment with different architectures, and compare the effect of different preprocessing and model configurations.
